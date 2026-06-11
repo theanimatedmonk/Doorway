@@ -1,7 +1,7 @@
 import { getSupabase } from '../_lib/supabase.js'
 import { setCors, handleOptions } from '../_lib/cors.js'
 import { generateUniqueSlug } from '../_lib/slug.js'
-import { normalizeUrl, normalizeBaseUrl, getShareUrl } from '../_lib/url.js'
+import { normalizeUrl, getShareUrl, getShareBaseUrl } from '../_lib/url.js'
 
 export default async function handler(req, res) {
   setCors(res)
@@ -18,14 +18,16 @@ export default async function handler(req, res) {
 
       if (error) throw error
 
+      const shareBaseUrl = getShareBaseUrl()
+
       const formatted = links.map((link) => ({
         id: link.id,
         purpose: link.purpose,
         recipient_name: link.recipient_name,
         slug: link.slug,
-        base_url: link.base_url,
+        base_url: shareBaseUrl || link.base_url,
         destination_url: link.destination_url,
-        share_url: link.base_url ? getShareUrl(link.base_url, link.slug) : null,
+        share_url: getShareUrl(shareBaseUrl || link.base_url, link.slug),
         created_at: link.created_at,
         view_count: link.visits?.[0]?.count ?? 0,
         status: (link.visits?.[0]?.count ?? 0) > 0 ? 'Viewed' : 'Not Viewed',
@@ -41,18 +43,20 @@ export default async function handler(req, res) {
         return res.status(400).json({ error: 'Purpose, recipient name, and destination URL are required' })
       }
 
-      if (!process.env.SITE_URL) {
-        return res.status(500).json({ error: 'SITE_URL is not configured in environment variables' })
-      }
-
       let destinationUrl
       let baseUrl
 
       try {
         destinationUrl = normalizeUrl(destination_url, 'destination URL')
-        baseUrl = normalizeBaseUrl(process.env.SITE_URL)
+        baseUrl = getShareBaseUrl()
       } catch (err) {
         return res.status(400).json({ error: err.message })
+      }
+
+      if (!baseUrl) {
+        return res.status(500).json({
+          error: 'No share URL configured. Deploy to Vercel or set APP_URL in environment variables.',
+        })
       }
 
       const slug = await generateUniqueSlug(supabase, recipient_name)
@@ -73,7 +77,7 @@ export default async function handler(req, res) {
 
       return res.status(201).json({
         ...data,
-        share_url: getShareUrl(data.base_url, data.slug),
+        share_url: getShareUrl(baseUrl, data.slug),
       })
     }
 

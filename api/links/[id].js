@@ -1,6 +1,6 @@
 import { getSupabase } from '../_lib/supabase.js'
 import { setCors, handleOptions } from '../_lib/cors.js'
-import { getShareUrl } from '../_lib/url.js'
+import { getShareUrl, getShareBaseUrl } from '../_lib/url.js'
 
 export default async function handler(req, res) {
   setCors(res)
@@ -47,9 +47,12 @@ export default async function handler(req, res) {
     const firstViewed = visits.length > 0 ? visits[visits.length - 1].visited_at : null
     const lastViewed = visits.length > 0 ? visits[0].visited_at : null
 
+    const shareBaseUrl = getShareBaseUrl() || link.base_url
+
     return res.status(200).json({
       ...link,
-      share_url: link.base_url ? getShareUrl(link.base_url, link.slug) : null,
+      base_url: shareBaseUrl,
+      share_url: getShareUrl(shareBaseUrl, link.slug),
       total_views: totalViews,
       first_viewed: firstViewed,
       last_viewed: lastViewed,

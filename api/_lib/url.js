@@ -23,6 +23,20 @@ export function normalizeBaseUrl(url) {
 }
 
 export function getShareUrl(baseUrl, slug) {
+  if (!baseUrl) return `/${slug}`
   const base = baseUrl.replace(/\/$/, '')
   return `${base}/${slug}`
+}
+
+export function getShareBaseUrl() {
+  if (process.env.APP_URL) {
+    return normalizeBaseUrl(process.env.APP_URL)
+  }
+  if (process.env.VERCEL_URL) {
+    return `https://${process.env.VERCEL_URL}`
+  }
+  if (process.env.SITE_URL) {
+    return normalizeBaseUrl(process.env.SITE_URL)
+  }
+  return null
 }

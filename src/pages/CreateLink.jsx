@@ -10,13 +10,13 @@ export default function CreateLink() {
     recipient_name: '',
     destination_url: '',
   })
-  const [siteUrl, setSiteUrl] = useState(null)
+  const [config, setConfig] = useState(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
   const [created, setCreated] = useState(null)
 
   useEffect(() => {
-    api.getConfig().then((config) => setSiteUrl(config.site_url)).catch(() => {})
+    api.getConfig().then(setConfig).catch(() => {})
   }, [])
 
   function handleChange(e) {
@@ -105,13 +105,20 @@ export default function CreateLink() {
         Wrap any link — Loom, Google Slides, portfolio — and track when it's opened.
       </p>
 
-      {siteUrl ? (
+      {config?.share_base_url ? (
         <p className="mt-2 text-xs text-slate-500">
-          Share links use your domain: <span className="font-medium text-slate-700">{siteUrl}/recipient</span>
+          Share links: <span className="font-medium text-slate-700">{config.share_base_url}/recipient</span>
         </p>
       ) : (
         <p className="mt-2 text-xs text-amber-600">
-          SITE_URL is not set in .env — add your domain (e.g. https://sajalkumar.com) to generate share links.
+          Set APP_URL in .env for local dev, or deploy to Vercel for automatic share links.
+        </p>
+      )}
+
+      {config?.uses_vercel_domain && (
+        <p className="mt-2 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-800">
+          Using your Vercel URL for now. To use your own domain (e.g. links.sajalkumar.com), connect a
+          subdomain in Vercel and set APP_URL — your main site on Framer can stay as-is.
         </p>
       )}
 
@@ -146,9 +153,9 @@ export default function CreateLink() {
             onChange={handleChange}
             className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm shadow-sm focus:border-slate-500 focus:outline-none focus:ring-1 focus:ring-slate-500"
           />
-          {siteUrl && form.recipient_name && (
+          {config?.share_base_url && form.recipient_name && (
             <p className="mt-1 text-xs text-slate-400">
-              Share link preview: {siteUrl}/{previewSlug}
+              Share link preview: {config.share_base_url}/{previewSlug}
             </p>
           )}
         </div>
