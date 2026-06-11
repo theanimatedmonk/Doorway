@@ -44,7 +44,7 @@ const routes = [
     load: () => import('../api/links/slug/[slug].js'),
   },
   {
-    methods: ['GET', 'OPTIONS'],
+    methods: ['GET', 'DELETE', 'OPTIONS'],
     match: (pathname) => {
       const m = pathname.match(/^\/api\/links\/([^/]+)$/)
       return m && m[1] !== 'slug' ? { id: m[1] } : null

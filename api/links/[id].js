@@ -6,14 +6,24 @@ export default async function handler(req, res) {
   setCors(res)
   if (handleOptions(req, res)) return
 
-  if (req.method !== 'GET') {
-    return res.status(405).json({ error: 'Method not allowed' })
-  }
-
   const { id } = req.query
 
   try {
     const supabase = getSupabase()
+
+    if (req.method === 'DELETE') {
+      const { data, error } = await supabase.from('links').delete().eq('id', id).select('id').single()
+
+      if (error || !data) {
+        return res.status(404).json({ error: 'Link not found' })
+      }
+
+      return res.status(200).json({ success: true })
+    }
+
+    if (req.method !== 'GET') {
+      return res.status(405).json({ error: 'Method not allowed' })
+    }
 
     const { data: link, error: linkError } = await supabase
       .from('links')

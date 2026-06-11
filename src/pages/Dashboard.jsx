@@ -7,29 +7,47 @@ export default function Dashboard() {
   const [links, setLinks] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
+  const [deletingId, setDeletingId] = useState(null)
 
-  useEffect(() => {
-    api
+  function loadLinks() {
+    return api
       .getLinks()
       .then(setLinks)
       .catch((err) => setError(err.message))
-      .finally(() => setLoading(false))
+  }
+
+  useEffect(() => {
+    loadLinks().finally(() => setLoading(false))
   }, [])
+
+  async function handleDelete(link) {
+    if (!confirm(`Delete link for ${link.recipient_name}? This cannot be undone.`)) return
+
+    setDeletingId(link.id)
+    setError(null)
+
+    try {
+      await api.deleteLink(link.id)
+      setLinks((prev) => prev.filter((item) => item.id !== link.id))
+    } catch (err) {
+      setError(err.message)
+    } finally {
+      setDeletingId(null)
+    }
+  }
 
   if (loading) {
     return <p className="text-slate-500">Loading links...</p>
   }
 
-  if (error) {
-    return (
-      <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-red-700">
-        Failed to load links: {error}
-      </div>
-    )
-  }
-
   return (
     <div>
+      {error && (
+        <div className="mb-4 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-red-700">
+          {error}
+        </div>
+      )}
+
       <div className="mb-8">
         <h1 className="text-2xl font-semibold tracking-tight">Dashboard</h1>
         <p className="mt-1 text-slate-500">Track all your personalized portfolio links.</p>
@@ -55,6 +73,7 @@ export default function Dashboard() {
                 <th className="px-4 py-3 font-medium">Status</th>
                 <th className="px-4 py-3 font-medium">Views</th>
                 <th className="px-4 py-3 font-medium">Created</th>
+                <th className="px-4 py-3 font-medium" />
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
@@ -79,6 +98,15 @@ export default function Dashboard() {
                   </td>
                   <td className="px-4 py-3 text-slate-600">{link.view_count}</td>
                   <td className="px-4 py-3 text-slate-500">{formatDate(link.created_at)}</td>
+                  <td className="px-4 py-3 text-right">
+                    <button
+                      onClick={() => handleDelete(link)}
+                      disabled={deletingId === link.id}
+                      className="text-sm text-red-600 hover:text-red-800 disabled:opacity-50"
+                    >
+                      {deletingId === link.id ? 'Deleting...' : 'Delete'}
+                    </button>
+                  </td>
                 </tr>
               ))}
             </tbody>

@@ -1,12 +1,14 @@
 import { useEffect, useState } from 'react'
-import { Link, useParams } from 'react-router-dom'
+import { Link, useNavigate, useParams } from 'react-router-dom'
 import { api } from '../lib/api'
 import { formatDate, formatDateTime, formatLocation, formatDevice, getShareUrl } from '../lib/format'
 
 export default function LinkDetails() {
   const { id } = useParams()
+  const navigate = useNavigate()
   const [link, setLink] = useState(null)
   const [loading, setLoading] = useState(true)
+  const [deleting, setDeleting] = useState(false)
   const [error, setError] = useState(null)
 
   useEffect(() => {
@@ -31,26 +33,56 @@ export default function LinkDetails() {
 
   const shareUrl = link.share_url || getShareUrl(link.base_url, link.slug)
 
+  async function handleDelete() {
+    if (!confirm(`Delete link for ${link.recipient_name}? This cannot be undone.`)) return
+
+    setDeleting(true)
+    setError(null)
+
+    try {
+      await api.deleteLink(id)
+      navigate('/')
+    } catch (err) {
+      setError(err.message)
+      setDeleting(false)
+    }
+  }
+
   return (
     <div>
       <Link to="/" className="text-sm text-slate-500 hover:text-slate-900">
         ← Back to Dashboard
       </Link>
 
-      <div className="mt-4 flex items-start justify-between">
+      {error && (
+        <div className="mt-4 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-red-700">
+          {error}
+        </div>
+      )}
+
+      <div className="mt-4 flex items-start justify-between gap-4">
         <div>
           <h1 className="text-2xl font-semibold tracking-tight">{link.purpose}</h1>
           <p className="mt-1 text-slate-500">For {link.recipient_name}</p>
         </div>
-        <span
-          className={`inline-flex rounded-full px-3 py-1 text-xs font-medium ${
-            link.status === 'Viewed'
-              ? 'bg-emerald-50 text-emerald-700'
-              : 'bg-slate-100 text-slate-600'
-          }`}
-        >
-          {link.status}
-        </span>
+        <div className="flex items-center gap-3">
+          <span
+            className={`inline-flex rounded-full px-3 py-1 text-xs font-medium ${
+              link.status === 'Viewed'
+                ? 'bg-emerald-50 text-emerald-700'
+                : 'bg-slate-100 text-slate-600'
+            }`}
+          >
+            {link.status}
+          </span>
+          <button
+            onClick={handleDelete}
+            disabled={deleting}
+            className="rounded-lg border border-red-200 px-3 py-1.5 text-sm text-red-600 hover:bg-red-50 disabled:opacity-50"
+          >
+            {deleting ? 'Deleting...' : 'Delete'}
+          </button>
+        </div>
       </div>
 
       <div className="mt-8 grid gap-4 sm:grid-cols-2">
