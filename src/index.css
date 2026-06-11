@@ -28,7 +28,7 @@ body {
   padding: 10px;
   box-sizing: border-box;
   display: grid;
-  background: #fff;
+  background: #f4f4f1;
   filter: blur(5px) contrast(10);
   mix-blend-mode: darken;
 }
@@ -58,5 +58,76 @@ body {
   90%,
   100% {
     transform: translate(300%);
+  }
+}
+
+.aurora {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.aurora-blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(90px);
+  will-change: transform;
+}
+
+.aurora-blob--lavender {
+  bottom: -18%;
+  left: -12%;
+  width: 55%;
+  height: 42%;
+  background: rgba(186, 168, 228, 0.55);
+  animation: aurora-drift-a 22s ease-in-out infinite;
+}
+
+.aurora-blob--mint {
+  bottom: -14%;
+  left: 28%;
+  width: 48%;
+  height: 38%;
+  background: rgba(130, 210, 198, 0.45);
+  animation: aurora-drift-b 26s ease-in-out infinite;
+}
+
+.aurora-blob--lime {
+  bottom: -16%;
+  right: -10%;
+  width: 44%;
+  height: 36%;
+  background: rgba(210, 228, 150, 0.4);
+  animation: aurora-drift-c 24s ease-in-out infinite;
+}
+
+@keyframes aurora-drift-a {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+  50% {
+    transform: translate(6%, -4%) scale(1.08);
+  }
+}
+
+@keyframes aurora-drift-b {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+  50% {
+    transform: translate(-5%, -3%) scale(1.05);
+  }
+}
+
+@keyframes aurora-drift-c {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+  50% {
+    transform: translate(-4%, 2%) scale(1.06);
   }
 }

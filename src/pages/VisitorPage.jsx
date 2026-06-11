@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { api } from '../lib/api'
 import TypingWelcome from '../components/TypingWelcome'
+import VisitorScreen from '../components/VisitorScreen'
 
 export default function VisitorPage() {
   const { slug } = useParams()
@@ -39,26 +40,26 @@ export default function VisitorPage() {
 
   if (phase === 'loading') {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-[#F4F4F1] px-4">
+      <VisitorScreen className="px-4">
         <div className="loader" />
-      </div>
+      </VisitorScreen>
     )
   }
 
   if (phase === 'not-found') {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-[#F4F4F1] px-4">
+      <VisitorScreen className="px-4">
         <div className="text-center">
           <h1 className="text-xl font-semibold text-slate-900">Link not found</h1>
           <p className="mt-2 text-slate-500">This link may have been removed or doesn't exist.</p>
         </div>
-      </div>
+      </VisitorScreen>
     )
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-[#F4F4F1] px-6">
+    <VisitorScreen className="px-6">
       <TypingWelcome recipientName={link.recipient_name} onComplete={handleComplete} />
-    </div>
+    </VisitorScreen>
   )
 }
