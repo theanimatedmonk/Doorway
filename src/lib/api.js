@@ -14,6 +14,7 @@ async function request(path, options = {}) {
 }
 
 export const api = {
+  getConfig: () => request('/api/config'),
   getLinks: () => request('/api/links'),
   createLink: (body) => request('/api/links', { method: 'POST', body: JSON.stringify(body) }),
   getLink: (id) => request(`/api/links/${id}`),

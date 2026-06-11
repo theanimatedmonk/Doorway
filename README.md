@@ -1,14 +1,16 @@
 # Personal Links
 
-A single-user tool for creating personalized portfolio links. Share a custom URL with someone, greet them by name, track when they visit, and get notified instantly.
+A single-user tool for wrapping any link with a personalized greeting and click tracking. Share a clean URL on your domain, know when someone opens it, and send them anywhere — portfolio, Loom, Google Slides, or anything else.
 
 ## Features
 
 ### Create Personalized Links
 
-Generate a unique link for each recipient with a purpose, name, and destination URL.
+Generate a unique link for each recipient. You share a link on **your domain**; they land on **any destination** you choose.
 
-Example: `https://personal-links.vercel.app/quyen`
+Example:
+- **Share:** `https://sajalkumar.com/quyen`
+- **Destination:** `https://loom.com/share/abc123`
 
 ### Dashboard
 
@@ -61,7 +63,7 @@ Device: Chrome on macOS
 
 ## How It Works
 
-1. Create a link with a purpose, recipient name, and destination URL
-2. Share the generated slug (e.g. `/quyen`)
-3. The visitor sees a welcome screen, then gets redirected
+1. Create a link with a purpose, recipient name, and destination URL (anything)
+2. Share your wrapped link (e.g. `sajalkumar.com/quyen`)
+3. The visitor sees a welcome screen, then gets redirected to the destination
 4. You receive a Telegram notification and can review visit history in the dashboard

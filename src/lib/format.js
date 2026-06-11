@@ -28,3 +28,8 @@ export function formatDevice(browser, os) {
   if (browser && os) return `${browser} on ${os}`
   return browser || os || 'Unknown'
 }
+
+export function getShareUrl(baseUrl, slug) {
+  if (!baseUrl) return `/${slug}`
+  return `${baseUrl.replace(/\/$/, '')}/${slug}`
+}

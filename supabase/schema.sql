@@ -5,6 +5,7 @@ create table if not exists links (
   purpose text not null,
   recipient_name text not null,
   slug text not null unique,
+  base_url text not null,
   destination_url text not null,
   created_at timestamptz not null default now()
 );

@@ -1,15 +1,13 @@
 import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { api } from '../lib/api'
-import { formatDate, formatDateTime, formatLocation, formatDevice } from '../lib/format'
+import { formatDate, formatDateTime, formatLocation, formatDevice, getShareUrl } from '../lib/format'
 
 export default function LinkDetails() {
   const { id } = useParams()
   const [link, setLink] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
-
-  const baseUrl = window.location.origin
 
   useEffect(() => {
     api
@@ -31,7 +29,7 @@ export default function LinkDetails() {
     )
   }
 
-  const fullUrl = `${baseUrl}/${link.slug}`
+  const shareUrl = link.share_url || getShareUrl(link.base_url, link.slug)
 
   return (
     <div>
@@ -57,8 +55,18 @@ export default function LinkDetails() {
 
       <div className="mt-8 grid gap-4 sm:grid-cols-2">
         <DetailCard label="Recipient Name" value={link.recipient_name} />
-        <DetailCard label="Destination URL" value={link.destination_url} isUrl />
-        <DetailCard label="Share Link" value={fullUrl} />
+        <DetailCard
+          label="Link to Share"
+          value={shareUrl}
+          isUrl
+          hint="Send this to your recipient. They'll see a welcome screen, then get redirected."
+        />
+        <DetailCard
+          label="Destination URL"
+          value={link.destination_url}
+          isUrl
+          hint="Portfolio, Loom, Google Slides — wherever they end up."
+        />
         <DetailCard label="Created Date" value={formatDate(link.created_at)} />
         <DetailCard label="First Viewed" value={formatDateTime(link.first_viewed)} />
         <DetailCard label="Last Viewed" value={formatDateTime(link.last_viewed)} />
@@ -101,22 +109,35 @@ export default function LinkDetails() {
   )
 }
 
-function DetailCard({ label, value, isUrl }) {
+function DetailCard({ label, value, isUrl, hint }) {
+  function copy() {
+    navigator.clipboard.writeText(value)
+  }
+
   return (
     <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
       <p className="text-xs font-medium uppercase tracking-wide text-slate-400">{label}</p>
       {isUrl ? (
-        <a
-          href={value}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="mt-1 block truncate text-sm text-blue-600 hover:underline"
-        >
-          {value}
-        </a>
+        <div className="mt-1 flex items-center gap-2">
+          <a
+            href={value}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="min-w-0 flex-1 truncate text-sm text-blue-600 hover:underline"
+          >
+            {value}
+          </a>
+          <button
+            onClick={copy}
+            className="shrink-0 rounded border border-slate-200 px-2 py-1 text-xs hover:bg-slate-50"
+          >
+            Copy
+          </button>
+        </div>
       ) : (
         <p className="mt-1 truncate text-sm text-slate-900">{value}</p>
       )}
+      {hint && <p className="mt-2 text-xs text-slate-500">{hint}</p>}
     </div>
   )
 }
