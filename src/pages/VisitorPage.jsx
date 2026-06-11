@@ -39,7 +39,7 @@ export default function VisitorPage() {
 
   if (phase === 'loading') {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-neutral-50 px-4">
+      <div className="flex min-h-screen items-center justify-center bg-[#F4F4F1] px-4">
         <div className="loader" />
       </div>
     )
@@ -47,7 +47,7 @@ export default function VisitorPage() {
 
   if (phase === 'not-found') {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-neutral-50 px-4">
+      <div className="flex min-h-screen items-center justify-center bg-[#F4F4F1] px-4">
         <div className="text-center">
           <h1 className="text-xl font-semibold text-slate-900">Link not found</h1>
           <p className="mt-2 text-slate-500">This link may have been removed or doesn't exist.</p>
@@ -57,7 +57,7 @@ export default function VisitorPage() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-neutral-50 px-6">
+    <div className="flex min-h-screen items-center justify-center bg-[#F4F4F1] px-6">
       <TypingWelcome recipientName={link.recipient_name} onComplete={handleComplete} />
     </div>
   )

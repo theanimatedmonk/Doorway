@@ -34,7 +34,7 @@ export default function TypingWelcome({ recipientName, onComplete }) {
   const regularText = visible.filter((u) => !u.bold).map((u) => u.char).join('')
 
   return (
-    <p className="text-center text-xl leading-relaxed text-slate-900 md:text-2xl">
+    <p className="text-center text-2xl leading-relaxed text-slate-900 md:text-3xl lg:text-4xl">
       {boldText && <span className="font-bold">{boldText}</span>}
       {regularText && <span className="font-normal">{regularText}</span>}
       <span className="typing-cursor ml-0.5 inline-block font-light text-slate-900">|</span>
