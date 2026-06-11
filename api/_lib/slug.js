@@ -8,8 +8,8 @@ export function slugify(name) {
     .replace(/^-|-$/g, '')
 }
 
-export async function generateUniqueSlug(supabase, recipientName) {
-  const baseSlug = slugify(recipientName) || 'link'
+export async function generateUniqueSlug(supabase, baseValue) {
+  const baseSlug = slugify(baseValue) || 'link'
   let slug = baseSlug
   let counter = 2
 
@@ -21,4 +21,14 @@ export async function generateUniqueSlug(supabase, recipientName) {
     slug = `${baseSlug}-${counter}`
     counter++
   }
+}
+
+export async function resolveUniqueSlug(supabase, { slug, fallback }) {
+  const normalized = slugify(slug || fallback)
+
+  if (!normalized) {
+    throw new Error('Invalid link slug')
+  }
+
+  return generateUniqueSlug(supabase, normalized)
 }

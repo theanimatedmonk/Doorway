@@ -29,6 +29,25 @@ export function formatDevice(browser, os) {
   return browser || os || 'Unknown'
 }
 
+export function slugify(value) {
+  return value
+    .toLowerCase()
+    .trim()
+    .replace(/[^\w\s-]/g, '')
+    .replace(/[\s_]+/g, '-')
+    .replace(/-+/g, '-')
+    .replace(/^-|-$/g, '')
+}
+
+export function suggestSlug({ purpose, recipientName }) {
+  if (purpose?.trim() && recipientName?.trim()) {
+    return slugify(`${purpose.trim()} for ${recipientName.trim()}`)
+  }
+  if (recipientName?.trim()) return slugify(recipientName.trim())
+  if (purpose?.trim()) return slugify(purpose.trim())
+  return ''
+}
+
 export function getShareUrl(baseUrl, slug) {
   if (!baseUrl) return `/${slug}`
   return `${baseUrl.replace(/\/$/, '')}/${slug}`

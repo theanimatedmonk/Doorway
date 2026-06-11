@@ -1,6 +1,6 @@
 import { getSupabase } from '../_lib/supabase.js'
 import { setCors, handleOptions } from '../_lib/cors.js'
-import { generateUniqueSlug } from '../_lib/slug.js'
+import { resolveUniqueSlug } from '../_lib/slug.js'
 import { normalizeUrl, getShareUrl, getShareBaseUrl } from '../_lib/url.js'
 
 export default async function handler(req, res) {
@@ -37,7 +37,7 @@ export default async function handler(req, res) {
     }
 
     if (req.method === 'POST') {
-      const { purpose, recipient_name, destination_url } = req.body
+      const { purpose, recipient_name, destination_url, slug } = req.body
 
       if (!purpose?.trim() || !recipient_name?.trim() || !destination_url?.trim()) {
         return res.status(400).json({ error: 'Purpose, recipient name, and destination URL are required' })
@@ -59,14 +59,23 @@ export default async function handler(req, res) {
         })
       }
 
-      const slug = await generateUniqueSlug(supabase, recipient_name)
+      let resolvedSlug
+
+      try {
+        resolvedSlug = await resolveUniqueSlug(supabase, {
+          slug: slug?.trim(),
+          fallback: recipient_name,
+        })
+      } catch {
+        return res.status(400).json({ error: 'Invalid link slug' })
+      }
 
       const { data, error } = await supabase
         .from('links')
         .insert({
           purpose: purpose.trim(),
           recipient_name: recipient_name.trim(),
-          slug,
+          slug: resolvedSlug,
           base_url: baseUrl,
           destination_url: destinationUrl,
         })

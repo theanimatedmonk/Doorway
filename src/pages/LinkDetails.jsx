@@ -87,6 +87,7 @@ export default function LinkDetails() {
 
       <div className="mt-8 grid gap-4 sm:grid-cols-2">
         <DetailCard label="Recipient Name" value={link.recipient_name} />
+        <DetailCard label="Link Slug" value={`/${link.slug}`} hint="URL path for this link." />
         <DetailCard
           label="Link to Share"
           value={shareUrl}

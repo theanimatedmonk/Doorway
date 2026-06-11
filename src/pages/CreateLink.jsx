@@ -1,15 +1,17 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { api } from '../lib/api'
-import { getShareUrl } from '../lib/format'
+import { getShareUrl, suggestSlug } from '../lib/format'
 
 export default function CreateLink() {
   const navigate = useNavigate()
   const [form, setForm] = useState({
     purpose: '',
     recipient_name: '',
+    slug: '',
     destination_url: '',
   })
+  const [slugTouched, setSlugTouched] = useState(false)
   const [config, setConfig] = useState(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
@@ -20,7 +22,26 @@ export default function CreateLink() {
   }, [])
 
   function handleChange(e) {
-    setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }))
+    const { name, value } = e.target
+
+    if (name === 'slug') {
+      setSlugTouched(true)
+      setForm((prev) => ({ ...prev, slug: value }))
+      return
+    }
+
+    setForm((prev) => {
+      const next = { ...prev, [name]: value }
+
+      if (!slugTouched && (name === 'purpose' || name === 'recipient_name')) {
+        next.slug = suggestSlug({
+          purpose: name === 'purpose' ? value : prev.purpose,
+          recipientName: name === 'recipient_name' ? value : prev.recipient_name,
+        })
+      }
+
+      return next
+    })
   }
 
   async function handleSubmit(e) {
@@ -42,9 +63,13 @@ export default function CreateLink() {
     navigator.clipboard.writeText(text)
   }
 
-  const previewSlug = form.recipient_name
-    ? form.recipient_name.toLowerCase().trim().replace(/[^\w\s-]/g, '').replace(/[\s_]+/g, '-')
-    : 'recipient'
+  function resetForm() {
+    setCreated(null)
+    setSlugTouched(false)
+    setForm({ purpose: '', recipient_name: '', slug: '', destination_url: '' })
+  }
+
+  const previewSlug = form.slug || 'your-slug'
 
   if (created) {
     const shareUrl = created.share_url || getShareUrl(created.base_url, created.slug)
@@ -85,10 +110,7 @@ export default function CreateLink() {
             View Details
           </button>
           <button
-            onClick={() => {
-              setCreated(null)
-              setForm({ purpose: '', recipient_name: '', destination_url: '' })
-            }}
+            onClick={resetForm}
             className="rounded-lg border border-slate-200 px-4 py-2 text-sm font-medium hover:bg-slate-50"
           >
             Create Another
@@ -107,7 +129,7 @@ export default function CreateLink() {
 
       {config?.share_base_url ? (
         <p className="mt-2 text-xs text-slate-500">
-          Share links: <span className="font-medium text-slate-700">{config.share_base_url}/recipient</span>
+          Share links: <span className="font-medium text-slate-700">{config.share_base_url}/your-slug</span>
         </p>
       ) : (
         <p className="mt-2 text-xs text-amber-600">
@@ -143,17 +165,37 @@ export default function CreateLink() {
           <label htmlFor="recipient_name" className="block text-sm font-medium text-slate-700">
             Recipient Name
           </label>
+          <p className="mt-0.5 text-xs text-slate-500">Used in the welcome message — e.g. &quot;Hello Blessen 👋&quot;</p>
           <input
             id="recipient_name"
             name="recipient_name"
             type="text"
             required
-            placeholder="Quyen"
+            placeholder="Blessen"
             value={form.recipient_name}
             onChange={handleChange}
             className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm shadow-sm focus:border-slate-500 focus:outline-none focus:ring-1 focus:ring-slate-500"
           />
-          {config?.share_base_url && form.recipient_name && (
+        </div>
+
+        <div>
+          <label htmlFor="slug" className="block text-sm font-medium text-slate-700">
+            Link Slug
+          </label>
+          <p className="mt-0.5 text-xs text-slate-500">
+            Shapes your share URL — e.g. email-designer-for-blessen
+          </p>
+          <input
+            id="slug"
+            name="slug"
+            type="text"
+            required
+            placeholder="email-designer-for-blessen"
+            value={form.slug}
+            onChange={handleChange}
+            className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm shadow-sm focus:border-slate-500 focus:outline-none focus:ring-1 focus:ring-slate-500"
+          />
+          {config?.share_base_url && form.slug && (
             <p className="mt-1 text-xs text-slate-400">
               Share link preview: {config.share_base_url}/{previewSlug}
             </p>
