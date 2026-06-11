@@ -31,6 +31,14 @@ const routes = [
     load: () => import('../api/config.js'),
   },
   {
+    methods: ['GET'],
+    match: (pathname) => {
+      const m = pathname.match(/^\/api\/og\/([^/]+)$/)
+      return m ? { slug: m[1] } : null
+    },
+    load: () => import('../api/og/[slug].js'),
+  },
+  {
     methods: ['GET', 'POST', 'OPTIONS'],
     match: (pathname) => (pathname === '/api/links' ? {} : null),
     load: () => import('../api/links/index.js'),
