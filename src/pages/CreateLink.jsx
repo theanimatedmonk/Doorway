@@ -117,7 +117,7 @@ export default function CreateLink() {
 
       {config?.uses_vercel_domain && (
         <p className="mt-2 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-800">
-          Using your Vercel URL for now. To use your own domain (e.g. links.sajalkumar.com), connect a
+          Using your Vercel URL for now. To use your own domain (e.g. hey.sajalkumar.com), connect a
           subdomain in Vercel and set APP_URL — your main site on Framer can stay as-is.
         </p>
       )}
