@@ -1,0 +1,51 @@
+import { getSupabase } from '../_lib/supabase.js'
+import { setCors, handleOptions } from '../_lib/cors.js'
+
+export default async function handler(req, res) {
+  setCors(res)
+  if (handleOptions(req, res)) return
+
+  if (req.method !== 'GET') {
+    return res.status(405).json({ error: 'Method not allowed' })
+  }
+
+  const { id } = req.query
+
+  try {
+    const supabase = getSupabase()
+
+    const { data: link, error: linkError } = await supabase
+      .from('links')
+      .select('*')
+      .eq('id', id)
+      .single()
+
+    if (linkError || !link) {
+      return res.status(404).json({ error: 'Link not found' })
+    }
+
+    const { data: visits, error: visitsError } = await supabase
+      .from('visits')
+      .select('*')
+      .eq('link_id', id)
+      .order('visited_at', { ascending: false })
+
+    if (visitsError) throw visitsError
+
+    const totalViews = visits.length
+    const firstViewed = visits.length > 0 ? visits[visits.length - 1].visited_at : null
+    const lastViewed = visits.length > 0 ? visits[0].visited_at : null
+
+    return res.status(200).json({
+      ...link,
+      total_views: totalViews,
+      first_viewed: firstViewed,
+      last_viewed: lastViewed,
+      status: totalViews > 0 ? 'Viewed' : 'Not Viewed',
+      visits,
+    })
+  } catch (error) {
+    console.error('Link details API error:', error)
+    return res.status(500).json({ error: 'Internal server error' })
+  }
+}
