@@ -1,6 +1,7 @@
 import { getSupabase } from './_lib/supabase.js'
 import { setCors, handleOptions } from './_lib/cors.js'
 import { sendTelegramNotification } from './_lib/telegram.js'
+import { isPreviewBot } from './_lib/bots.js'
 import {
   getClientIp,
   getGeoFromIp,
@@ -21,6 +22,10 @@ export default async function handler(req, res) {
 
   if (!slug) {
     return res.status(400).json({ error: 'Slug is required' })
+  }
+
+  if (isPreviewBot(req.headers['user-agent'])) {
+    return res.status(200).json({ success: true, skipped: true })
   }
 
   try {

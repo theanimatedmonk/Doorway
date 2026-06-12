@@ -4,6 +4,8 @@ import { api } from '../lib/api'
 import TypingWelcome from '../components/TypingWelcome'
 import VisitorScreen from '../components/VisitorScreen'
 
+const VISIT_RECORD_DELAY_MS = 2000
+
 export default function VisitorPage() {
   const { slug } = useParams()
   const [phase, setPhase] = useState('loading')
@@ -11,6 +13,7 @@ export default function VisitorPage() {
 
   useEffect(() => {
     let cancelled = false
+    let visitTimer
 
     async function init() {
       try {
@@ -19,7 +22,10 @@ export default function VisitorPage() {
 
         setLink(linkData)
         setPhase('welcome')
-        api.recordVisit(slug).catch(console.error)
+
+        visitTimer = setTimeout(() => {
+          if (!cancelled) api.recordVisit(slug).catch(console.error)
+        }, VISIT_RECORD_DELAY_MS)
       } catch {
         if (!cancelled) setPhase('not-found')
       }
@@ -29,6 +35,7 @@ export default function VisitorPage() {
 
     return () => {
       cancelled = true
+      clearTimeout(visitTimer)
     }
   }, [slug])
 
