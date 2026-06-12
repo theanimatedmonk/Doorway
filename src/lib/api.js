@@ -20,5 +20,10 @@ export const api = {
   getLink: (id) => request(`/api/links/${id}`),
   deleteLink: (id) => request(`/api/links/${id}`, { method: 'DELETE' }),
   getLinkBySlug: (slug) => request(`/api/links/slug/${slug}`),
-  recordVisit: (slug) => request('/api/visit', { method: 'POST', body: JSON.stringify({ slug }) }),
+  recordVisit: (slug) =>
+    request('/api/visit', {
+      method: 'POST',
+      body: JSON.stringify({ slug, engaged: true }),
+      keepalive: true,
+    }),
 }

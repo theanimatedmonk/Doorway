@@ -45,3 +45,22 @@ export function isPreviewBot(userAgent) {
   if (!userAgent?.trim()) return true
   return BOT_UA_REGEX.test(userAgent)
 }
+
+// Cities that are almost exclusively cloud/preview crawler traffic.
+const DATACENTER_GEOS = [
+  { city: 'boydton', country: 'united states' },
+  { city: 'forest city', country: 'united states' },
+  { city: 'prineville', country: 'united states' },
+  { city: 'altoona', country: 'united states' },
+  { city: 'clonee', country: 'ireland' },
+]
+
+export function isDatacenterGeo(city, country) {
+  if (!city || !country) return false
+  const normalizedCity = city.toLowerCase().trim()
+  const normalizedCountry = country.toLowerCase().trim()
+
+  return DATACENTER_GEOS.some(
+    (geo) => normalizedCity === geo.city && normalizedCountry.includes(geo.country),
+  )
+}
