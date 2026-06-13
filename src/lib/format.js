@@ -9,7 +9,8 @@ export function formatDate(dateString) {
 
 export function formatDateTime(dateString) {
   if (!dateString) return '—'
-  return new Date(dateString).toLocaleString('en-US', {
+  return new Date(dateString).toLocaleString('en-IN', {
+    timeZone: 'Asia/Kolkata',
     month: 'short',
     day: 'numeric',
     year: 'numeric',

@@ -1,3 +1,10 @@
+function escapeHtml(value) {
+  return String(value)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+}
+
 export async function sendTelegramNotification({ recipientName, purpose, time, location, device }) {
   const token = process.env.TELEGRAM_BOT_TOKEN
   const chatId = process.env.TELEGRAM_CHAT_ID
@@ -7,14 +14,15 @@ export async function sendTelegramNotification({ recipientName, purpose, time, l
     return
   }
 
+  const recipient = escapeHtml(recipientName)
+  const linkPurpose = escapeHtml(purpose)
+
   const message = [
-    '👀 Portfolio Viewed',
+    `👀 <b>${recipient}</b> viewed your link "<b>${linkPurpose}</b>"`,
     '',
-    `Recipient: ${recipientName}`,
-    `Purpose: ${purpose}`,
-    `Time: ${time}`,
-    `Location: ${location}`,
-    `Device: ${device}`,
+    `Time: ${escapeHtml(time)}`,
+    `Location: ${escapeHtml(location)}`,
+    `Device: ${escapeHtml(device)}`,
   ].join('\n')
 
   const response = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
@@ -23,6 +31,7 @@ export async function sendTelegramNotification({ recipientName, purpose, time, l
     body: JSON.stringify({
       chat_id: chatId,
       text: message,
+      parse_mode: 'HTML',
     }),
   })
 

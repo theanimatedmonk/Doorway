@@ -50,12 +50,17 @@ export function formatLocation(city, country) {
   return country || 'Unknown'
 }
 
+const DISPLAY_TIMEZONE = 'Asia/Kolkata'
+
 export function formatVisitTime(date = new Date()) {
-  return date.toLocaleString('en-US', {
+  const formatted = date.toLocaleString('en-IN', {
+    timeZone: DISPLAY_TIMEZONE,
     month: 'short',
     day: 'numeric',
     hour: 'numeric',
     minute: '2-digit',
     hour12: true,
   })
+
+  return `${formatted} IST`
 }
