@@ -3,6 +3,28 @@ import { Link } from 'react-router-dom'
 import { api } from '../lib/api'
 import { formatDate } from '../lib/format'
 
+function TrashIcon({ className }) {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.75"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+      aria-hidden="true"
+    >
+      <path d="M3 6h18" />
+      <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+      <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
+      <path d="M10 11v6" />
+      <path d="M14 11v6" />
+    </svg>
+  )
+}
+
 export default function Dashboard() {
   const [links, setLinks] = useState([])
   const [loading, setLoading] = useState(true)
@@ -100,11 +122,13 @@ export default function Dashboard() {
                   <td className="px-4 py-3 text-slate-500">{formatDate(link.created_at)}</td>
                   <td className="px-4 py-3 text-right">
                     <button
+                      type="button"
                       onClick={() => handleDelete(link)}
                       disabled={deletingId === link.id}
-                      className="text-sm text-red-600 hover:text-red-800 disabled:opacity-50"
+                      aria-label={`Delete link for ${link.recipient_name}`}
+                      className="inline-flex rounded-md p-1.5 text-red-600 transition hover:bg-red-50 hover:text-red-700 disabled:opacity-50"
                     >
-                      {deletingId === link.id ? 'Deleting...' : 'Delete'}
+                      <TrashIcon className="h-4 w-4" />
                     </button>
                   </td>
                 </tr>
