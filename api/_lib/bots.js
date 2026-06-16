@@ -49,6 +49,8 @@ export function isPreviewBot(userAgent) {
 // Cities that are almost exclusively cloud/preview crawler traffic.
 const DATACENTER_GEOS = [
   { city: 'boydton', country: 'united states' },
+  { city: 'des moines', country: 'united states' },
+  { city: 'west des moines', country: 'united states' },
   { city: 'forest city', country: 'united states' },
   { city: 'prineville', country: 'united states' },
   { city: 'altoona', country: 'united states' },
