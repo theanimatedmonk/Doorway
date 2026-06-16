@@ -14,17 +14,23 @@ export async function getGeoFromIp(ip) {
   }
 
   try {
-    const response = await fetch(`http://ip-api.com/json/${ip}?fields=status,country,city`)
+    const response = await fetch(
+      `http://ip-api.com/json/${ip}?fields=status,country,city,regionName`,
+    )
     const data = await response.json()
 
     if (data.status === 'success') {
-      return { country: data.country || 'Unknown', city: data.city || 'Unknown' }
+      return {
+        country: data.country || 'Unknown',
+        city: data.city || 'Unknown',
+        region: data.regionName || null,
+      }
     }
   } catch (error) {
     console.error('Geo lookup failed:', error)
   }
 
-  return { country: 'Unknown', city: 'Unknown' }
+  return { country: 'Unknown', city: 'Unknown', region: null }
 }
 
 export function parseUserAgent(userAgent) {

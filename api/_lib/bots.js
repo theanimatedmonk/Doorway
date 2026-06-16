@@ -54,15 +54,19 @@ const DATACENTER_GEOS = [
   { city: 'forest city', country: 'united states' },
   { city: 'prineville', country: 'united states' },
   { city: 'altoona', country: 'united states' },
+  { city: 'quincy', country: 'united states', region: 'washington' },
   { city: 'clonee', country: 'ireland' },
 ]
 
-export function isDatacenterGeo(city, country) {
+export function isDatacenterGeo(city, country, region) {
   if (!city || !country) return false
   const normalizedCity = city.toLowerCase().trim()
   const normalizedCountry = country.toLowerCase().trim()
+  const normalizedRegion = region?.toLowerCase().trim() || ''
 
-  return DATACENTER_GEOS.some(
-    (geo) => normalizedCity === geo.city && normalizedCountry.includes(geo.country),
-  )
+  return DATACENTER_GEOS.some((geo) => {
+    if (normalizedCity !== geo.city || !normalizedCountry.includes(geo.country)) return false
+    if (geo.region) return normalizedRegion === geo.region
+    return true
+  })
 }

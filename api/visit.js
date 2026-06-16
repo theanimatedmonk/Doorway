@@ -48,7 +48,7 @@ export default async function handler(req, res) {
     const ip = getClientIp(req)
     const geo = await getGeoFromIp(ip)
 
-    if (isDatacenterGeo(geo.city, geo.country)) {
+    if (isDatacenterGeo(geo.city, geo.country, geo.region)) {
       return res.status(200).json({ success: true, skipped: true })
     }
 
