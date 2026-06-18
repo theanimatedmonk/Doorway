@@ -1,11 +1,33 @@
-import { Link, useLocation } from 'react-router-dom'
+import { useEffect, useState } from 'react'
+import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom'
+import CreateLinkModal from './CreateLinkModal'
 
-export default function Layout({ children }) {
+export default function Layout() {
   const location = useLocation()
-  const isVisitorPage = !['/', '/create'].includes(location.pathname) && !location.pathname.startsWith('/links/')
+  const navigate = useNavigate()
+  const [createOpen, setCreateOpen] = useState(false)
+  const [linksRefreshToken, setLinksRefreshToken] = useState(0)
+
+  const isVisitorPage =
+    !['/', '/create'].includes(location.pathname) && !location.pathname.startsWith('/links/')
+
+  useEffect(() => {
+    if (location.pathname === '/create') {
+      setCreateOpen(true)
+      navigate('/', { replace: true })
+    }
+  }, [location.pathname, navigate])
 
   if (isVisitorPage) {
-    return children
+    return <Outlet />
+  }
+
+  function openCreateModal() {
+    setCreateOpen(true)
+  }
+
+  function handleLinkCreated() {
+    setLinksRefreshToken((token) => token + 1)
   }
 
   return (
@@ -22,16 +44,25 @@ export default function Layout({ children }) {
             >
               Dashboard
             </Link>
-            <Link
-              to="/create"
+            <button
+              type="button"
+              onClick={openCreateModal}
               className="rounded-lg bg-slate-900 px-3 py-1.5 font-medium text-white transition-colors hover:bg-slate-700"
             >
               Create Link
-            </Link>
+            </button>
           </nav>
         </div>
       </header>
-      <main className="mx-auto max-w-5xl px-4 py-8">{children}</main>
+      <main className="mx-auto max-w-5xl px-4 py-8">
+        <Outlet context={{ openCreateModal, linksRefreshToken }} />
+      </main>
+
+      <CreateLinkModal
+        open={createOpen}
+        onClose={() => setCreateOpen(false)}
+        onCreated={handleLinkCreated}
+      />
     </div>
   )
 }

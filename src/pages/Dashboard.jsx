@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useOutletContext } from 'react-router-dom'
 import { api } from '../lib/api'
 import { formatDate } from '../lib/format'
 
@@ -26,6 +26,7 @@ function TrashIcon({ className }) {
 }
 
 export default function Dashboard() {
+  const { openCreateModal, linksRefreshToken } = useOutletContext()
   const [links, setLinks] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
@@ -40,7 +41,7 @@ export default function Dashboard() {
 
   useEffect(() => {
     loadLinks().finally(() => setLoading(false))
-  }, [])
+  }, [linksRefreshToken])
 
   async function handleDelete(link) {
     if (!confirm(`Delete link for ${link.recipient_name}? This cannot be undone.`)) return
@@ -78,12 +79,13 @@ export default function Dashboard() {
       {links.length === 0 ? (
         <div className="rounded-xl border border-dashed border-slate-300 bg-white px-6 py-12 text-center">
           <p className="text-slate-600">No links yet.</p>
-          <Link
-            to="/create"
+          <button
+            type="button"
+            onClick={openCreateModal}
             className="mt-4 inline-block rounded-lg bg-slate-900 px-4 py-2 text-sm font-medium text-white hover:bg-slate-700"
           >
             Create your first link
-          </Link>
+          </button>
         </div>
       ) : (
         <div className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
